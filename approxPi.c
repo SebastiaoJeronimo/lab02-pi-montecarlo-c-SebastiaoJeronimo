@@ -77,6 +77,14 @@ double calculate_pi (long nPoints, int nThreads) {
   // wait for threads / get results
   int i = 0;
   pthread_t thread_ids[nThreads]; //instanciate an array for the threads ids
+  /**
+   * //have to compute how many points are each thread going to take
+   * 1 -> do the rest 
+   *      ex:  int rest = Points%nThreads 
+   * 2 -> divide the points per threads 
+   *      ex : int pointsPerThread = nPoints/nThreads
+   * 3 -> the last thread when created will have the points per thread plus the rest
+  */
   while (i < nThreads)
   {
     // id of thread , atributes NULL in most cases , name of function to execute , 1 corresponds to argument
