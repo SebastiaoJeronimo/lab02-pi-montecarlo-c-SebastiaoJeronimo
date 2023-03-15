@@ -10,6 +10,8 @@
 int silent = 0;
 int debug = 0;
 
+//seed = rand()
+//x,seed = pseudorandom.gen(seed)
 #define DEBUG(statement) if(debug) statement
 
 /**
@@ -46,18 +48,22 @@ void usage () {
   exit (1);
 }
 
-unsigned long myrand_r (unsigned long *seed) {
+/* unsigned long myrand_r (unsigned long *seed) {
   *seed = (*seed >> 1) | ((*seed & 1)<<(sizeof(*seed)-1));
   return *seed;
-}
+}  00000001} */
 
 void *worker (void *arg) {
   unsigned long nP = *(unsigned long*)arg;
   unsigned long *in = malloc(sizeof(*in));
   *in = 0;
   DEBUG(printf ("  Worker: %ld\n", nP));
-  // set seed
+  // set seed 
   // main loop
+  // make a pseudo random generator
+  int x = rand();
+  int y = rand();
+  //same formula as the java one
   DEBUG(printf ("     Win: %ld\n", *in));
   return (void *)in;
 }
@@ -69,6 +75,24 @@ double calculate_pi (long nPoints, int nThreads) {
   long in = 0;
   // launch threads  
   // wait for threads / get results
+  int i = 0;
+  pthread_t thread_ids[nThreads]; //instanciate an array for the threads ids
+  while (i < nThreads)
+  {
+    // id of thread , atributes NULL in most cases , name of function to execute , 1 corresponds to argument
+    pthread_create(&thread_ids[i], NULL, worker, 1);
+    i++;
+  }
+  i = 0;
+  int *aux_ptr;
+  while (i < nThreads)
+  {
+    *aux_ptr = 0;
+    //pthread_join sends value to aux_ptr
+    pthread_join(thread_ids[i], &aux_ptr); 
+    in += *aux_ptr;
+    i++;
+  }
   return (double)in * 4 / nPoints;
 }
 
